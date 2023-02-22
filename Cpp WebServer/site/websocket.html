@@ -1,0 +1,10 @@
+<html>
+	<body>
+		<script> 
+		ws =new WebSocket('ws://localhost/pong.lua');
+		ws.onopen=function(){console.log('opened'); ws.send("hello");}
+		ws.onclose = function(){console.log('closed');}
+		ws.onmessage = function(ev){console.log(ev.data);}
+		</script>
+	</body>
+</html>
