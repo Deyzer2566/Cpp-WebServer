@@ -25,7 +25,7 @@ int TCPServer::listen(int port)
 bool TCPServer::accept(TCPSocket& sock)
 {
 	sockaddr_in client_addr;
-	int client_addr_size = sizeof(client_addr);
+	unsigned int client_addr_size = sizeof(client_addr);
 	int acc = ::accept(this->socket, (sockaddr*)&client_addr, &client_addr_size);
 	if (acc > 0)
 	{

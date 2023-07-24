@@ -1,0 +1,5 @@
+class Handler
+{
+	void execute();
+
+};

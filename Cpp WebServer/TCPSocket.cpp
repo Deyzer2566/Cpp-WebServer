@@ -55,10 +55,10 @@ bool TCPSocket::setBlockingEnabled(bool blocking)
 	unsigned long mode = blocking ? 0 : 1;
 	return (ioctlsocket(this->socket, FIONBIO, &mode) == 0);
 #else
-	int flags = fcntl(fd, F_GETFL, 0);
+	int flags = fcntl(this->socket, F_GETFL, 0);
 	if (flags == -1) return false;
 	flags = blocking ? (flags & ~O_NONBLOCK) : (flags | O_NONBLOCK);
-	return (fcntl(fd, F_SETFL, flags) == 0);
+	return (fcntl(this->socket, F_SETFL, flags) == 0);
 #endif
 }
 

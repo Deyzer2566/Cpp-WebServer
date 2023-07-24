@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 	int port = 80;
 	Server serv("site", port);
 	std::time_t t = ::time(NULL);
-	while (::time(NULL)-t < 10)
+	while (true)//::time(NULL)-t < 30)
 	{
 		serv.cycle();
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));

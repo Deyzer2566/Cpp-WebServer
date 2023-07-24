@@ -5,7 +5,7 @@
 #include <string>
 #include <memory>
 #include "Script.hpp"
-#include "LuaBridge\LuaBridge.h"
+#include <LuaBridge/LuaBridge.h>
 #include "Packets.hpp"
 #include "Crypto.hpp"
 #include <iostream>
@@ -173,7 +173,7 @@ void Server::cycle()
 		}
 		if (!response)
 			continue;
-		HTTPResponse resp;// (packet);
+		HTTPResponse resp(packet);
 		resp.headers["Accept-Ranges"] = "bytes";
 		resp.headers["Connection"] = packet.headers["Connection"];
 		resp.headers["Server"] = "DeyzServer_v0.5";
@@ -212,8 +212,8 @@ void Server::cycle()
 				resp.sizeResponse = str.size();
 			}
 		}
-		else
-			resp = HTTPResponse(packet);
+		//else
+		//	resp = HTTPResponse(packet);
 		resp.compile_packet(false);
 		it->get()->send(resp);
 	}
