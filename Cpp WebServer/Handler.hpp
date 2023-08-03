@@ -1,5 +1,0 @@
-class Handler
-{
-	void execute();
-
-};
