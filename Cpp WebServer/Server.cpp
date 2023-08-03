@@ -5,7 +5,7 @@
 #include <string>
 #include <memory>
 #include "Script.hpp"
-#include "LuaBridge\LuaBridge.h"
+#include <LuaBridge/LuaBridge.h>
 #include "Packets.hpp"
 #include "Crypto.hpp"
 #include <iostream>
@@ -107,11 +107,11 @@ void Server::cycle()
 		table["method"] = packet.method.c_str();
 		table["uri"] = packet.uri.c_str();
 		table["params"] = luabridge::newTable(HTTPHandler.getState());
-		for (std::map<std::string, std::string>::iterator it = packet.params.begin(); it != packet.params.end(); it++)
-			table["params"][it->first.c_str()] = it->second.c_str();
+		for (std::map<std::string, std::string>::iterator packetIt = packet.params.begin(); packetIt != packet.params.end(); packetIt++)
+			table["params"][packetIt->first.c_str()] = packetIt->second.c_str();
 		table["headers"] = luabridge::newTable(HTTPHandler.getState());
-		for (std::map<std::string, std::string>::iterator it = packet.headers.begin(); it != packet.headers.end(); it++)
-			table["headers"][it->first.c_str()] = it->second.c_str();
+		for (std::map<std::string, std::string>::iterator packetIt = packet.headers.begin(); packetIt != packet.headers.end(); packetIt++)
+			table["headers"][packetIt->first.c_str()] = packetIt->second.c_str();
 		table["messageBody"] = std::string(packet.messageBody.begin(), packet.messageBody.end()).c_str();
 		table["id"] = it->get()->getSocket();
 		table["servdir"] = workDir.c_str();
@@ -173,7 +173,7 @@ void Server::cycle()
 		}
 		if (!response)
 			continue;
-		HTTPResponse resp;// (packet);
+		HTTPResponse resp(packet);
 		resp.headers["Accept-Ranges"] = "bytes";
 		resp.headers["Connection"] = packet.headers["Connection"];
 		resp.headers["Server"] = "DeyzServer_v0.5";
@@ -212,8 +212,8 @@ void Server::cycle()
 				resp.sizeResponse = str.size();
 			}
 		}
-		else
-			resp = HTTPResponse(packet);
+		//else
+		//	resp = HTTPResponse(packet);
 		resp.compile_packet(false);
 		it->get()->send(resp);
 	}

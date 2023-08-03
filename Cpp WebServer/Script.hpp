@@ -1,6 +1,6 @@
 #pragma once
 #include "lua.hpp"
-#include "LuaBridge\LuaBridge.h"
+#include <LuaBridge/LuaBridge.h>
 #include <string>
 struct Script
 {

@@ -29,4 +29,5 @@ int HTTPClient::send(HTTPResponse & resp)
 		if (getState() == TCPClient::Error)
 			return r;
 	}
+	return r;
 }

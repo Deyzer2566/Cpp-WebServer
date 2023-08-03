@@ -250,7 +250,7 @@ void WebSocketPacket::read(std::string message)
 	}
 	else if (Length == 127)
 	{
-		Length = (message[offset] << 56) | (message[offset + 1] << 48) | (message[offset + 2] << 40) | (message[offset + 3] << 32) | (message[offset + 4] << 24) | (message[offset + 5] << 16) | (message[offset + 6] << 8) | message[offset + 7];
+		Length = ((unsigned long long)message[offset] << 56) | ((unsigned long long)message[offset + 1] << 48) | ((unsigned long long)message[offset + 2] << 40) | ((unsigned long long)message[offset + 3] << 32) | ((unsigned long long)message[offset + 4] << 24) | ((unsigned long long)message[offset + 5] << 16) | ((unsigned long long)message[offset + 6] << 8) | (unsigned long long)message[offset + 7];
 		offset += 8;
 	}
 	if (isMask)
