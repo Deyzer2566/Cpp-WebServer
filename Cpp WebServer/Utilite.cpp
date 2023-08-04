@@ -1,4 +1,3 @@
-#pragma once
 #include "Utilite.hpp"
 #include <string>
 #include <algorithm>

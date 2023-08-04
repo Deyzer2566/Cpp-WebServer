@@ -1,4 +1,3 @@
-#pragma once
 #include "TCPServer.hpp"
 
 int TCPServer::listen(int port)

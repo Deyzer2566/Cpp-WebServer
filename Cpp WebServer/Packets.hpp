@@ -5,7 +5,6 @@
 #ifdef _DEBUG
 #include <iostream>
 #endif
-#include <fstream>
 struct HTTPPacket
 {
 	std::string startingLine;
@@ -19,24 +18,17 @@ struct HTTPRequest: public HTTPPacket
 	std::string uri;
 	std::string version;
 	std::map<std::string, std::string> params;
-	bool success;
 	HTTPRequest();
 	void operator=(HTTPRequest packet);
 	HTTPRequest(std::string _X);
 };
 struct HTTPResponse: public HTTPPacket
 {
-	size_t sizeResponse;
-	std::ifstream file;
 	static const std::string version;
 	unsigned short code;
 	std::string message;
-	bool success;
-	HTTPResponse();
 	void operator=(HTTPResponse & packet);
-	HTTPResponse(HTTPRequest packet);
-	~HTTPResponse();
-	void compile_packet(bool appendBody);
+	void compile_packet();
 };
 struct WebSocketPacket
 {

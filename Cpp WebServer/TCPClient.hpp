@@ -11,7 +11,7 @@ private:
 
 public:
 	static const int packet_size = 4095;
-	
+
 	TCPClient();
 
 	TCPClient(TCPSocket& sock);
@@ -32,7 +32,7 @@ public:
 	При удачном принятии пакета возвращает количество отправленных байт
 	При ошибке возвращает системный код ошибки
 	*/
-	int send(std::string message, bool guarantee);
+	int send(std::string message);
 
 	/*
 	Чтение сообщения из сокета
@@ -41,5 +41,5 @@ public:
 	При успешном принятии возвращает принятую строку
 	При ошибке возвращает пустую строку
 	*/
-	std::string recv(bool guarantee);
+	std::string recv();
 };

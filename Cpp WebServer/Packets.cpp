@@ -1,4 +1,3 @@
-#pragma once
 #include "Packets.hpp"
 #include <vector>
 #include <string>
@@ -13,7 +12,7 @@
 std::string HTTPPacket::to_string()
 {
 	std::string ret;
-	ret += startingLine + "\n";;
+	ret += startingLine + "\n";
 	for (std::map<std::string, std::string>::iterator it = headers.begin(); it != headers.end(); it++)
 		ret += it->first + ": " + it->second+"\n";
 	ret += "\n";
@@ -28,11 +27,9 @@ void HTTPRequest::operator=(HTTPRequest packet)
 	uri = packet.uri;
 	version = packet.uri;
 	params = packet.params;
-	success = packet.success;
 }
 HTTPRequest::HTTPRequest(std::string _X)
 {
-	success = false;
 	std::vector<std::string> strings = split(_X, "\r\n");
 	if (strings.size() < 2)
 	{
@@ -111,124 +108,21 @@ HTTPRequest::HTTPRequest(std::string _X)
 		messageBody.push_back('\r');
 		messageBody.push_back('\n');
 	}
-	success = true;
 }
 
 const std::string HTTPResponse::version = "HTTP/1.1";
-HTTPResponse::HTTPResponse() :code(0), sizeResponse(0), success(0){}
 void HTTPResponse::operator=(HTTPResponse & packet)
 {
-	sizeResponse = packet.sizeResponse;
-	if (packet.file.is_open())
-		file.swap(packet.file);
 	code = packet.code;
 	message = packet.message;
 	messageBody = packet.messageBody;
 	headers = packet.headers;
 	startingLine = packet.startingLine;
 }
-HTTPResponse::HTTPResponse(HTTPRequest packet) :code(0), sizeResponse(0), success(0)
-{
-	if (packet.version != HTTPResponse::version){
-		code = 404;
-		message = "not found!";
-		return;
-	}
-	if (packet.method == "GET")
-	{
-		std::string filename = packet.uri;
-		if (filename.find(".") == filename.npos)
-		{
-			const std::string formats[] = { ".html", ".htm" };
-			for (int i = 0; i < 2; i++)
-			{
-				std::string fname = (filename + formats[i]);
-				file.open(fname.c_str(), std::ios::in | std::ios::binary);
-				if (file.is_open())
-				{
-					filename += formats[i];
-					break;
-				}
-			}
-		}
-		else
-			file.open(filename.c_str(), std::ios::in | std::ios::binary);
-		if (!file.is_open())
-		{
-			code = 404;
-			message = "Not Found";
-			return;
-		}
-		file.seekg(0, file.end);
-		sizeResponse = file.tellg();
-		file.seekg(0, file.beg);
-		{
-			std::map<std::string, std::string>::iterator range = packet.headers.find("Range");
-			int to = -1;
-			if (range != packet.headers.end())
-			{
-				code = 206;
-				message = "Partial Content";
-				std::vector<std::string> spl = split(range->second, { "-" });
-				if (spl.size() != 2)
-				{
-#ifdef _DEBUG
-					std::cout << "Partial Content Error" << std::endl;
-#endif
-					message = "Bad Request";
-					code = 400;
-					sizeResponse = 0;
-					return;
-				}
-				if (isStrInt(spl[0]) && isStrInt(spl[1]))
-				{
-					file.seekg(std::stoi(spl[0]));
-					sizeResponse = std::stoi(spl[1]) - std::stoi(spl[0]);
-				}
-				else
-				{
-#ifdef _DEBUG
-					std::cout << "Partial Content Error" << std::endl;
-#endif
-					message = "Bad Request";
-					code = 400;
-					sizeResponse = 0;
-					return;
-				}
-			}
-		}
-		if (code == 0){
-			code = 200;
-			message = "OK";
-		}
-		headers["Server"] = "KozServer";
-		headers["Accept-Ranges"] = "bytes";
-		headers["Connection"] = packet.headers["Connection"];
-	}
-	else
-	{
-		code = 405;
-		message = "Method Not Allowed";
-	}
-}
-HTTPResponse::~HTTPResponse()
-{
-	file.close();
-}
-void HTTPResponse::compile_packet(bool appendBody)
+void HTTPResponse::compile_packet()
 {
 	startingLine = version + " " + std::to_string(code) + " " + message;
-	headers["Content-Length"] = std::to_string(sizeResponse);
-	if (file.is_open() && appendBody)
-	{
-		char b[TCPSocket::packet_size];
-		for (size_t i = file.tellg(); i < sizeResponse; i += TCPSocket::packet_size)
-		{
-			size_t count = (sizeResponse - i > TCPSocket::packet_size) ? TCPSocket::packet_size : (sizeResponse - i);
-			file.read(b, count);
-			messageBody.insert(messageBody.end(), b, b + count);
-		}
-	}
+	headers["Content-Length"] = std::to_string(messageBody.size());
 }
 
 void WebSocketPacket::read(std::string message)

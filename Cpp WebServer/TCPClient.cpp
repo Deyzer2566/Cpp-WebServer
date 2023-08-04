@@ -1,4 +1,3 @@
-#pragma once
 #include "TCPClient.hpp"
 #include <string>
 #ifdef _WIN32
@@ -40,18 +39,17 @@ TCPClient::State TCPClient::getState()
 /*
 Записывает сообщение на сокет
 std::string message - строка, которую необходимо отправить
-bool guarantee - нужно ли гарантировать полное отправление пакета
 При удачном принятии пакета возвращает количество отправленных байт
 При ошибке возвращает системный код ошибки
 */
-int TCPClient::send(std::string message, bool guarantee)
+int TCPClient::send(std::string message)
 {
 	int sended_total = 0;
 	do
 	{
 		int size = (message.size() - sended_total > packet_size) ? packet_size : (message.size() - sended_total);
 		int s = ::send(socket, &message[sended_total], size, 0);
-		if (s == -1 && guarantee)
+		if (s == -1)
 		{
 			int code =
 #ifdef _WIN32
@@ -80,19 +78,17 @@ int TCPClient::send(std::string message, bool guarantee)
 		}
 		if (s > 0)
 			sended_total += s;
-	} while (sended_total != message.size() && guarantee);
+	} while (sended_total != message.size());
 	state = Success;
 	return sended_total;
 }
 
 /*
 Чтение сообщения из сокета
-bool guarantee - необходимо ли полностью читать сообщение
-(например, когда размер принятого пакета > size_packet)
 При успешном принятии возвращает принятую строку
 При ошибке возвращает пустую строку
 */
-std::string TCPClient::recv(bool guarantee)
+std::string TCPClient::recv()
 {
 	char buffer[packet_size];
 	std::string returned;
@@ -100,7 +96,7 @@ std::string TCPClient::recv(bool guarantee)
 	do
 	{
 		int r = ::recv(socket, buffer, packet_size, 0);
-		if (r == -1 && guarantee)
+		if (r == -1)
 		{
 			int code =
 #ifdef _WIN32
@@ -112,7 +108,7 @@ std::string TCPClient::recv(bool guarantee)
 			state = Error;
 			return "";
 			//				if (
-			//					code == 
+			//					code ==
 			//#ifdef _WIN32
 			//					WSAEWOULDBLOCK//Пустой ли буфер
 			//#else
@@ -141,7 +137,7 @@ std::string TCPClient::recv(bool guarantee)
 			recieved_total += r;
 			returned.insert(returned.end(), buffer, buffer + r);
 		}
-	} while (recieved_total%packet_size == 0 && guarantee);
+	} while (recieved_total%packet_size == 0);
 	state = Success;
 	return returned;
 }

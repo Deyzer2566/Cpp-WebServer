@@ -1,7 +1,5 @@
-#pragma once
 #include "TCPSocket.hpp"
-#ifdef _WIN32
-#pragma comment(lib,"ws2_32.lib")
+#ifdef _WIN32 || _WIN64
 #include <WinSock2.h>
 #else
 #include <sys/socket.h>

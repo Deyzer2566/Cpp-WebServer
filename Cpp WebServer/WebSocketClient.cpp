@@ -1,4 +1,3 @@
-#pragma once
 #include "WebSocketClient.hpp"
 #include <string>
 #include <thread>
@@ -8,8 +7,3 @@ WebSocketClient::WebSocketClient(int socket, sockaddr_in addr) :TCPClient(socket
 WebSocketClient::WebSocketClient(TCPSocket& sock) : TCPClient(sock){}
 
 WebSocketClient::WebSocketClient(){}
-
-int WebSocketClient::send(std::string message)
-{
-	return TCPClient::send(message, true);
-}

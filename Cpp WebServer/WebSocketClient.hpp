@@ -6,5 +6,4 @@ struct WebSocketClient : public TCPClient
 	WebSocketClient();
 	WebSocketClient(TCPSocket& sock);
 	WebSocketClient(int socket, sockaddr_in addr);
-	int send(std::string message);
 };

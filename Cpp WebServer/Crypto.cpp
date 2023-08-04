@@ -1,4 +1,3 @@
-#pragma once
 #include "Crypto.hpp"
 #include <vector>
 #include <string>
@@ -13,7 +12,7 @@ T toBigEndian(T num)
 	T p = 1;
 	if (*(char*)&p == 0)
 		return num;
-	for (int i = 0; i < sizeof(T)/2; i++)
+	for (size_t i = 0; i < sizeof(T)/2; i++)
 	{
 		char temp = ((char*)&num)[i];
 		((char*)&num)[i] = ((char*)&num)[sizeof(T) - i-1];
@@ -62,7 +61,7 @@ std::vector<unsigned long> SHA1(std::vector<unsigned char> vect)
 	vect.resize(size,0);
 	vect.insert(vect.end(), (unsigned char*)&oldsize, (unsigned char*)&oldsize + sizeof(size_t));
 	std::vector<unsigned long> h = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0 };
-	for (int i = 0; i < vect.size(); i += 64)
+	for (size_t i = 0; i < vect.size(); i += 64)
 	{
 		std::vector<unsigned long> w((unsigned long*)&vect[i], (unsigned long*)(&vect[i]+64));
 		for (unsigned long& j : w)
