@@ -3,10 +3,6 @@
 #include <string>
 #include "Utilite.hpp"
 #include <map>
-#ifdef _DEBUG
-#include <iostream>
-#endif
-#include <fstream>
 #include "TCPSocket.hpp"
 
 std::string HTTPPacket::to_string()
@@ -25,27 +21,16 @@ void HTTPRequest::operator=(HTTPRequest packet)
 {
 	method = packet.method;
 	uri = packet.uri;
-	version = packet.uri;
 	params = packet.params;
 }
 HTTPRequest::HTTPRequest(std::string _X)
 {
 	std::vector<std::string> strings = split(_X, "\r\n");
 	if (strings.size() < 2)
-	{
-#ifdef _DEBUG
-		std::cout << "Error in reading HTTP packet!" << std::endl << "Error in split of a packet!" << std::endl;
-#endif
-		return;
-	}
+	    throw std::string("Can't split the packet");
 	std::vector<std::string> startingLine = split(strings[0], " ");
 	if (startingLine.size() != 3)
-	{
-#ifdef _DEBUG
-		std::cout << "Error in reading HTTP packet!" << std::endl << "Error in split a starting line" << std::endl;
-#endif
-		return;
-	}
+	    throw std::string("Invalid starting line format");
 	method = startingLine[0];
 	uri = startingLine[1];
 	if (uri.find("%") != uri.npos)
@@ -77,12 +62,7 @@ HTTPRequest::HTTPRequest(std::string _X)
 			if (splited1.size() == 2)
 				params[splited1[0]] = splited1[1];
 			else
-			{
-#ifdef _DEBUG
-				std::cout << "Error in reading HTTP packet!" << std::endl << "Error in split a params" << std::endl;
-#endif
-				return;
-			}
+			    throw std::string("Can't split the params");
 		}
 	}
 	version = startingLine[2];
@@ -92,10 +72,7 @@ HTTPRequest::HTTPRequest(std::string _X)
 		size_t pos = strings[i].find(": ");
 		if (pos == strings[i].npos)
 		{
-#ifdef _DEBUG
-			std::cout << "Error in reading HTTP packet!" << std::endl << "Error in split of headers[" << strings[i] << std::endl;
-#endif
-			return;
+		    throw std::string("Invalid header format: "+strings[i]);
 		}
 		headers[strings[i].substr(0, pos)] = strings[i].substr(pos + 2);
 	}

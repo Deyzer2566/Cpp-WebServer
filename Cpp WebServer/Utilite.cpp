@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <vector>
 #include <climits>
-#include <cmath>
 typedef std::vector<unsigned short> Unicode;
 bool isStrInt(const std::string s)
 {
@@ -70,7 +69,10 @@ unsigned int getByteFromHex(std::string str)
 {
 	unsigned int ret = 0;
 	for (size_t i = 0; i < str.size(); i++)
-		ret += ((str[i] >= 'a' && str[i] <= 'f') ? (str[i] - 'a' + 10) : (str[i] - '0')) * std::pow(16, str.size() - i - 1);
+	{
+        ret<<=4;
+		ret += ((str[i] >= 'a' && str[i] <= 'f') ? (str[i] - 'a' + 10) : (str[i] - '0'));
+	}
 	return ret;
 }
 Unicode UTF_8_to_Unicode(std::string in, std::string marker)

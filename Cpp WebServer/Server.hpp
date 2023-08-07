@@ -21,9 +21,8 @@ private:
 	std::vector<std::unique_ptr<HTTPHandler>> httpHandlers;
 	std::map<std::string, std::unique_ptr<WebSocketHandler>> webSocketHandlers;
 public:
-	Server();
 	void cycle();
-	int startup(int port);
+	void startup(int port);
 	~Server();
 	Server(int port);
 	void addHTTPHandler(HTTPHandler* httpHandler);

@@ -1,7 +1,6 @@
 #include "TCPClient.hpp"
 #include <string>
 #ifdef _WIN32
-#pragma comment(lib,"ws2_32.lib")
 #include <WinSock2.h>
 #else
 #include <sys/socket.h>
@@ -25,6 +24,7 @@ TCPClient::TCPClient(TCPSocket& sock): TCPSocket(sock){}
 
 TCPClient::~TCPClient()
 {
+    this->~TCPSocket();
 	state = Disconnected;
 }
 
@@ -42,12 +42,12 @@ std::string message - строка, которую необходимо отправить
 При удачном принятии пакета возвращает количество отправленных байт
 При ошибке возвращает системный код ошибки
 */
-int TCPClient::send(std::string message)
+size_t TCPClient::send(std::string message)
 {
-	int sended_total = 0;
+	size_t sended_total = 0;
 	do
 	{
-		int size = (message.size() - sended_total > packet_size) ? packet_size : (message.size() - sended_total);
+		size_t size = (message.size() - sended_total > packet_size) ? packet_size : (message.size() - sended_total);
 		int s = ::send(socket, &message[sended_total], size, 0);
 		if (s == -1)
 		{
@@ -68,7 +68,7 @@ int TCPClient::send(std::string message)
 				)
 			{
 				state = Error;
-				return code;
+				throw std::string("Error during sending: "+std::to_string(code));
 			}
 		}
 		if (s == 0)
@@ -77,7 +77,7 @@ int TCPClient::send(std::string message)
 			return 0;
 		}
 		if (s > 0)
-			sended_total += s;
+			sended_total += (size_t)s;
 	} while (sended_total != message.size());
 	state = Success;
 	return sended_total;
@@ -106,7 +106,7 @@ std::string TCPClient::recv()
 #endif
 				;
 			state = Error;
-			return "";
+			throw std::string("Error during reading: "+std::to_string(code));
 			//				if (
 			//					code ==
 			//#ifdef _WIN32

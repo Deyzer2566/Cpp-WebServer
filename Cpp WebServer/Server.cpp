@@ -26,12 +26,11 @@ std::vector<std::shared_ptr<WebSocketClient>>::iterator Server::disconnect(std::
 {
 	return websocket_clients.erase(it);
 }
-int Server::startup(int port)
+void Server::startup(int port)
 {
-	if (listener.listen(80) != 0)
-		return -1;
+	if (listener.listen(port) != 0)
+		throw std::string("Can't start the server");
 	listener.setBlockingEnabled(false);
-	return 0;
 }
 void Server::cycle()
 {
@@ -45,7 +44,15 @@ void Server::cycle()
 	size_t disconnected = 0;
 	for (std::vector<std::shared_ptr<HTTPClient>>::iterator it = http_client_copy.begin(); it != http_client_copy.end(); it++)
 	{
-		std::string message = it->get()->recv();
+		std::string message;
+		try
+		{
+		    message = it->get()->recv();
+		}
+		catch (std::string error)
+		{
+		    std::cout<<error<<std::endl;
+		}
 		if (it->get()->getState() == TCPClient::Disconnected)
 		{
 			disconnect(it - http_client_copy.begin() + http_clients.begin() - disconnected);
@@ -54,7 +61,15 @@ void Server::cycle()
 		}
 		if (message == "")
 			continue;
-		HTTPRequest packet(message);
+        HTTPRequest packet;
+        try
+        {
+            packet = HTTPRequest(message);
+        }
+        catch (std::string message)
+        {
+            std::cout<<message<<std::endl;
+        }
         if (packet.headers["Connection"] == "Upgrade")
 		{
 			if (packet.headers["Upgrade"] == "websocket")
@@ -110,7 +125,15 @@ void Server::cycle()
 	disconnected = 0;
 	for (std::vector<std::shared_ptr<WebSocketClient>>::iterator it = websocket_clients_copy.begin(); it != websocket_clients_copy.end(); it++)
 	{
-		std::string message = it->get()->recv();
+		std::string message;
+		try
+		{
+		    message = it->get()->recv();
+		}
+		catch (std::string error)
+		{
+		    std::cout<<error<<std::endl;
+		}
 		if (it->get()->getState() == TCPClient::Disconnected)
 		{
 			disconnect(it - websocket_clients_copy.begin() + websocket_clients.begin() - disconnected);
