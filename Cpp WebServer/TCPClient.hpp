@@ -1,29 +1,20 @@
 #pragma once
 #include "TCPSocket.hpp"
 #include <string>
-struct TCPClient: public TCPSocket
+#include <memory>
+struct TCPClient
 {
 public:
-	enum State{ Success, Error, Disconnected };
 
 private:
-	State state;
+	std::shared_ptr<TCPSocket> socket;
 
 public:
 	static const int packet_size = 4095;
 
-	TCPClient();
-
-	TCPClient(TCPSocket& sock);
+	TCPClient(TCPSocket* sock);
 
 	TCPClient(int socket, sockaddr_in addr);
-
-	~TCPClient();
-
-	/*
-	Возвращает состояние сокета
-	*/
-	State getState();
 
 	/*
 	Записывает сообщение на сокет
@@ -42,4 +33,8 @@ public:
 	При ошибке возвращает пустую строку
 	*/
 	std::string recv();
+
+	void setBlocking(bool enable);
+
+	bool operator==(TCPClient & client);
 };

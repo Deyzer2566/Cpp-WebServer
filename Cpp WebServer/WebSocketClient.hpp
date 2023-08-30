@@ -1,9 +1,8 @@
 #pragma once
 #include "TCPClient.hpp"
-struct WebSocketClient : public TCPClient
+class WebSocketClient : public TCPClient
 {
+public:
 	std::string webSocketScriptName;//временное решение
-	WebSocketClient();
-	WebSocketClient(TCPSocket& sock);
-	WebSocketClient(int socket, sockaddr_in addr);
+	WebSocketClient(TCPClient client);
 };

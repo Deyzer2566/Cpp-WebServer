@@ -1,8 +1,15 @@
 #pragma once
 #include "TCPSocket.hpp"
-struct TCPServer: public TCPSocket
+#include "TCPClient.hpp"
+#include <memory>
+class TCPServer
 {
-	int listen(int port);
+private:
+    std::shared_ptr<TCPSocket> socket;
+public:
+	void listen(int port);
 
-	bool accept(TCPSocket & sock);
+	TCPClient accept();
+
+	void setBlocking(bool enable);
 };

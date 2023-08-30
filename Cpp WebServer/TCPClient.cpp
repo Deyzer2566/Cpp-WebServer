@@ -10,30 +10,20 @@
 #include <netinet/in.h>
 #include <fcntl.h>
 #endif
-/*
-Дефолтный конструктор
-*/
-TCPClient::TCPClient(){}
+#include "NonblockingException.hpp"
+#include "ClosedSocketException.hpp"
 
 /*
 Конструктор сокета
 */
-TCPClient::TCPClient(int socket, sockaddr_in addr) :TCPSocket(socket,addr){}
-
-TCPClient::TCPClient(TCPSocket& sock): TCPSocket(sock){}
-
-TCPClient::~TCPClient()
+TCPClient::TCPClient(int socket, sockaddr_in addr)
 {
-    this->~TCPSocket();
-	state = Disconnected;
+    this->socket = std::shared_ptr<TCPSocket>(new TCPSocket(socket,addr));
 }
 
-/*
-Возвращает состояние сокета
-*/
-TCPClient::State TCPClient::getState()
+TCPClient::TCPClient(TCPSocket* sock)
 {
-	return state;
+    this->socket = std::shared_ptr<TCPSocket>(sock);
 }
 
 /*
@@ -48,7 +38,7 @@ size_t TCPClient::send(std::string message)
 	do
 	{
 		size_t size = (message.size() - sended_total > packet_size) ? packet_size : (message.size() - sended_total);
-		int s = ::send(socket, &message[sended_total], size, 0);
+		int s = ::send(socket.get()->getSocket(), &message[sended_total], size, 0);
 		if (s == -1)
 		{
 			int code =
@@ -66,20 +56,13 @@ size_t TCPClient::send(std::string message)
 				EAGAIN
 #endif
 				)
-			{
-				state = Error;
-				throw std::string("Error during sending: "+std::to_string(code));
-			}
+                throw code;
 		}
 		if (s == 0)
-		{
-			state = Disconnected;
-			return 0;
-		}
+			throw ClosedSocketException();
 		if (s > 0)
 			sended_total += (size_t)s;
 	} while (sended_total != message.size());
-	state = Success;
 	return sended_total;
 }
 
@@ -95,7 +78,7 @@ std::string TCPClient::recv()
 	int recieved_total = 0;
 	do
 	{
-		int r = ::recv(socket, buffer, packet_size, 0);
+		int r = ::recv(socket.get()->getSocket(), buffer, packet_size, 0);
 		if (r == -1)
 		{
 			int code =
@@ -105,39 +88,34 @@ std::string TCPClient::recv()
 				errno
 #endif
 				;
-			state = Error;
-			throw std::string("Error during reading: "+std::to_string(code));
-			//				if (
-			//					code ==
-			//#ifdef _WIN32
-			//					WSAEWOULDBLOCK//Пустой ли буфер
-			//#else
-			//					EAGAIN
-			//#endif
-			//					)
-			//				{
-			//					state=Error;
-			//					return "";
-			//				}
+            if (
+                code ==
 #ifdef _WIN32
-			if (code == WSAECONNRESET)
-			{
-				state = Disconnected;
-				return "";
-			}
+                WSAEWOULDBLOCK//Пустой ли буфер
+#else
+                EAGAIN
 #endif
+                )
+                throw NonblockingException();
+			throw code;
 		}
 		if (r == 0)
-		{
-			state = Disconnected;
-			return "";
-		}
+            throw ClosedSocketException();
 		if (r > 0)
 		{
 			recieved_total += r;
 			returned.insert(returned.end(), buffer, buffer + r);
 		}
 	} while (recieved_total%packet_size == 0);
-	state = Success;
 	return returned;
+}
+
+void TCPClient::setBlocking(bool enable)
+{
+    this->socket.get()->setBlocking(enable);
+}
+
+bool TCPClient::operator==(TCPClient & client)
+{
+    return this->socket == client.socket;
 }

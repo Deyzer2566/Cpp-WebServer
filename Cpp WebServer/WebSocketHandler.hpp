@@ -1,6 +1,6 @@
 #pragma once
 #include "WebSocketClient.hpp"
-#include "Packets.hpp"
+#include "WebSocketPacket.hpp"
 class WebSocketHandler
 {
 public:

@@ -1,10 +1,9 @@
 #pragma once
 #include "TCPClient.hpp"
-#include "Packets.hpp"
-struct HTTPClient :public TCPClient
+#include "HTTPResponse.hpp"
+class HTTPClient :public TCPClient
 {
-	HTTPClient();
-	HTTPClient(TCPSocket& sock);
-	HTTPClient(int socket, sockaddr_in addr);
+public:
+	HTTPClient(TCPClient client);
 	int send(HTTPResponse& resp);
 };

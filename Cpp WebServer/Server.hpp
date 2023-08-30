@@ -12,17 +12,16 @@ struct Server
 {
 private:
 	TCPServer listener;
-	std::vector<std::shared_ptr<HTTPClient>>::iterator disconnect(\
-		std::vector<std::shared_ptr<HTTPClient>> ::iterator it);
-	std::vector<std::shared_ptr<WebSocketClient>>::iterator disconnect(\
-		std::vector<std::shared_ptr<WebSocketClient>> ::iterator it);
-	std::vector<std::shared_ptr<HTTPClient>> http_clients;
-	std::vector<std::shared_ptr<WebSocketClient>> websocket_clients;
+	std::vector<HTTPClient>::iterator disconnect(\
+		std::vector<HTTPClient> ::iterator it);
+	std::vector<WebSocketClient>::iterator disconnect(\
+		std::vector<WebSocketClient> ::iterator it);
+	std::vector<HTTPClient> http_clients;
+	std::vector<WebSocketClient> websocket_clients;
 	std::vector<std::unique_ptr<HTTPHandler>> httpHandlers;
 	std::map<std::string, std::unique_ptr<WebSocketHandler>> webSocketHandlers;
 public:
 	void cycle();
-	void startup(int port);
 	~Server();
 	Server(int port);
 	void addHTTPHandler(HTTPHandler* httpHandler);

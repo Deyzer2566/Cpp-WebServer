@@ -1,6 +1,6 @@
 #pragma once
 #include "HTTPClient.hpp"
-#include "Packets.hpp"
+#include "HTTPRequest.hpp"
 class HTTPHandler
 {
 public:

@@ -18,14 +18,6 @@ protected:
 
 public:
 	static const int packet_size = 4095;
-
-	/*
-	Дефолтный конструктор
-	*/
-	TCPSocket();
-
-	void create(int socket, sockaddr_in addr);
-
 	/*
 	Конструктор сокета
 	*/
@@ -41,9 +33,7 @@ public:
 	/*
 	Устанавливает блокирующий режим
 	*/
-	bool setBlockingEnabled(bool blocking);
-
-	void swap(TCPSocket & sock);
+	bool setBlocking(bool enable);
 
 	int getSocket();
 

@@ -1,24 +1,8 @@
 #include "Crypto.hpp"
-#include <vector>
-#include <string>
-#include <iostream>
+#include "Endian.hpp"
 unsigned long leftrotate(unsigned long x, unsigned long offset)
 {
 	return (x << offset) | (x >> (32 - offset));
-}
-template<typename T>
-T toBigEndian(T num)
-{
-	T p = 1;
-	if (*(char*)&p == 0)
-		return num;
-	for (size_t i = 0; i < sizeof(T)/2; i++)
-	{
-		char temp = ((char*)&num)[i];
-		((char*)&num)[i] = ((char*)&num)[sizeof(T) - i-1];
-		((char*)&num)[sizeof(T) - i - 1] = temp;
-	}
-	return num;
 }
 std::string base64(std::vector<unsigned char>bytes)
 {
@@ -47,25 +31,25 @@ std::string base64(std::vector<unsigned char>bytes)
 		ret += '=';
 	return ret;
 }
-std::vector<unsigned long> SHA1(std::string str)
+std::array<unsigned long, 5> SHA1(std::string str)
 {
-	return SHA1(std::vector<unsigned char>(str.begin(), str.end()));
+    return SHA1(std::vector<unsigned char>(str.begin(),str.end()));
 }
-std::vector<unsigned long> SHA1(std::vector<unsigned char> vect)
+std::array<unsigned long, 5> SHA1(std::vector<unsigned char> vect)
 {
 	size_t oldsize = vect.size();
 	size_t size = oldsize;
-	oldsize = toBigEndian(oldsize<<3);//==*8
+	oldsize = changeEndianIfNotBigEndian(oldsize<<3);//==*8
 	size = ((vect.size() + sizeof(size_t)) / 64 + 1) * 64 - sizeof(size_t);
 	vect.push_back(0x80);
 	vect.resize(size,0);
 	vect.insert(vect.end(), (unsigned char*)&oldsize, (unsigned char*)&oldsize + sizeof(size_t));
-	std::vector<unsigned long> h = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0 };
+	std::array<unsigned long, 5> h = { 0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0 };
 	for (size_t i = 0; i < vect.size(); i += 64)
 	{
 		std::vector<unsigned long> w((unsigned long*)&vect[i], (unsigned long*)(&vect[i]+64));
 		for (unsigned long& j : w)
-			j = toBigEndian(j);
+			j = changeEndianIfNotBigEndian(j);
 		w.resize(80,0);
 		for (int j = 16; j < 80; j++)
 			w[j] = leftrotate((w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16]), 1);

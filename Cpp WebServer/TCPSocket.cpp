@@ -1,5 +1,5 @@
 #include "TCPSocket.hpp"
-#ifdef _WIN32 || _WIN64
+#ifdef _WIN32
 #include <WinSock2.h>
 #else
 #include <sys/socket.h>
@@ -9,20 +9,11 @@
 #include <netinet/in.h>
 #include <fcntl.h>
 #endif
-/*
-Дефолтный конструктор
-*/
-TCPSocket::TCPSocket(){}
 
 /*
 Конструктор сокета
 */
 TCPSocket::TCPSocket(int socket, sockaddr_in addr)
-{
-	create(socket, addr);
-}
-
-void TCPSocket::create(int socket, sockaddr_in addr)
 {
 	this->socket = socket;
 	this->addr = addr;
@@ -45,31 +36,19 @@ void TCPSocket::close()
 #endif
 }
 
-bool TCPSocket::setBlockingEnabled(bool blocking)
+bool TCPSocket::setBlocking(bool enable)
 {
 	if (this->socket < 0) return false;
 
 #ifdef _WIN32
-	unsigned long mode = blocking ? 0 : 1;
+	unsigned long mode = enable ? 0 : 1;
 	return (ioctlsocket(this->socket, FIONBIO, &mode) == 0);
 #else
 	int flags = fcntl(this->socket, F_GETFL, 0);
 	if (flags == -1) return false;
-	flags = blocking ? (flags & ~O_NONBLOCK) : (flags | O_NONBLOCK);
+	flags = enable ? (flags & ~O_NONBLOCK) : (flags | O_NONBLOCK);
 	return (fcntl(this->socket, F_SETFL, flags) == 0);
 #endif
-}
-
-void TCPSocket::swap(TCPSocket & sock)
-{
-	int tmp_sock = sock.socket;
-	sockaddr_in tmp_addr = sock.addr;
-
-	sock.socket = socket;
-	sock.addr = addr;
-
-	socket = tmp_sock;
-	tmp_addr = tmp_addr;
 }
 
 int TCPSocket::getSocket()

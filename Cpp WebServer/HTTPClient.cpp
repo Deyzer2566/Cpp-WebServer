@@ -1,14 +1,9 @@
 #include "HTTPClient.hpp"
-#include <string>
-#include <thread>
-#include "Packets.hpp"
-HTTPClient::HTTPClient(int socket, sockaddr_in addr) :TCPClient(socket, addr){}
+#include "HTTPResponse.hpp"
 
-HTTPClient::HTTPClient(TCPSocket& sock) : TCPClient(sock){}
-
-HTTPClient::HTTPClient(){}
+HTTPClient::HTTPClient(TCPClient client): TCPClient(client){}
 
 int HTTPClient::send(HTTPResponse & resp)
 {
-	return this->TCPClient::send(resp.to_string());
+	return this->TCPClient::send(resp.toString());
 }

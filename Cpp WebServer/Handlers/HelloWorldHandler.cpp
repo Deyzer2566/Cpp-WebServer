@@ -1,14 +1,14 @@
 #include "HelloWorldHandler.hpp"
-#include "../Packets.hpp"
+#include "../HTTPRequest.hpp"
 void HelloWorldHandler::executeRequest(HTTPRequest request, HTTPClient& httpClient)
 {
-    if(request.method == "GET" && request.uri=="/")
+    if(request.getMethod() == "GET" && request.getURI()=="/")
     {
         HTTPResponse resp;
-        resp.code=200;
-        resp.message="OK";
-        resp.messageBody = "<html><body><p>Hello, world!</p></body></html>";
-        resp.headers["Connection"]="close";
+        resp.setCode(200);
+        resp.setMessage("OK");
+        resp.setMessageBody("<html><body><p>Hello, world!</p></body></html>");
+        resp.setHeader("Connection","close");
         resp.compile_packet();
         httpClient.send(resp);
     }
