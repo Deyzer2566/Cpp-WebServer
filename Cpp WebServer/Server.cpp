@@ -97,12 +97,12 @@ void Server::cycle()
 					resp.setHeader("Connection", "Upgrade");
 					resp.setHeader("WebSocket-Origin", packet.getHeader("Host"));
 					resp.setHeader("WebSocket-Location","ws://" + packet.getHeader("Host") + "/" + packet.getURI());
-					std::array<unsigned long, 5> h = SHA1(packet.getHeader("Sec-WebSocket-Key") + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
-					std::vector<unsigned char> bytes;
-					for (unsigned long c : h)
+					std::array<uint32_t, 5> h = SHA1(packet.getHeader("Sec-WebSocket-Key") + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11");
+					std::vector<uint8_t> bytes;
+					for (uint32_t c : h)
 					{
 						c = changeEndianIfNotBigEndian(c);
-						bytes.insert(bytes.end(), (unsigned char*)&c, (unsigned char*)&c + sizeof(long));
+						bytes.insert(bytes.end(), (uint8_t*)&c, (uint8_t*)&c + sizeof(int32_t));
 					}
 					resp.setHeader("Sec-WebSocket-Accept", base64(bytes));
 				}

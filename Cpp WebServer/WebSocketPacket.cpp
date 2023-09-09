@@ -80,7 +80,7 @@ WebSocketPacket::WebSocketPacket(std::string message)
 	}
 	else if (length == 127)
 	{
-		length = ((unsigned long long)message[offset] << 56) | ((unsigned long long)message[offset + 1] << 48) | ((unsigned long long)message[offset + 2] << 40) | ((unsigned long long)message[offset + 3] << 32) | ((unsigned long long)message[offset + 4] << 24) | ((unsigned long long)message[offset + 5] << 16) | ((unsigned long long)message[offset + 6] << 8) | (unsigned long long)message[offset + 7];
+		length = ((uint64_t)message[offset] << 56) | ((uint64_t)message[offset + 1] << 48) | ((uint64_t)message[offset + 2] << 40) | ((uint64_t)message[offset + 3] << 32) | ((uint64_t)message[offset + 4] << 24) | ((uint64_t)message[offset + 5] << 16) | ((uint64_t)message[offset + 6] << 8) | (uint64_t)message[offset + 7];
 		offset += 8;
 	}
 	if (hasMask)
@@ -103,7 +103,7 @@ std::string WebSocketPacket::getData()
 {
     return data;
 }
-void WebSocketPacket::setMask(std::array<unsigned char, 4> mask)
+void WebSocketPacket::setMask(std::array<uint8_t, 4> mask)
 {
     this->mask = mask;
 }

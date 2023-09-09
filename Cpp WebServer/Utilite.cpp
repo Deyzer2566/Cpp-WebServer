@@ -3,12 +3,12 @@
 #include <algorithm>
 #include <vector>
 #include <climits>
-typedef std::vector<unsigned short> Unicode;
+typedef std::vector<uint16_t> Unicode;
 bool isStrInt(const std::string s)
 {
 	return !s.empty() && (s.find_first_not_of("0123456789") == s.npos);
 }
-std::string Unicode_to_ASCII(Unicode str, unsigned short US, unsigned char AS)
+std::string Unicode_to_ASCII(Unicode str, uint16_t US, uint8_t AS)
 {
 	std::string ret;
 	for (Unicode::iterator it = str.begin(); it != str.end(); it++)
@@ -35,7 +35,7 @@ std::vector<std::string> split(std::string str, std::string del)
 Unicode UTF_8(std::string in, std::string marker)
 {
 	std::transform(in.begin(), in.end(), in.begin(), tolower);
-	std::vector<unsigned char> bytes;
+	std::vector<uint8_t> bytes;
 	Unicode ret;
 	for (size_t a = 0; a < in.npos;)
 	{
@@ -44,7 +44,7 @@ Unicode UTF_8(std::string in, std::string marker)
 	}
 	for (std::string::iterator it = in.begin(); it != in.end();)
 	{
-		unsigned char i = (((*(it) >= 'a' && *(it) <= 'f') ? (*(it)-'a' + 10) : (*(it)-'0')) * 16 +
+		uint8_t i = (((*(it) >= 'a' && *(it) <= 'f') ? (*(it)-'a' + 10) : (*(it)-'0')) * 16 +
 			((*(it + 1) >= 'a' && *(it + 1) <= 'f') ? (*(it + 1) - 'a' + 10) : (*(it + 1) - '0')));
 		bytes.push_back(i);
 		it += 2;
@@ -91,15 +91,15 @@ Unicode UTF_8_to_Unicode(std::string in, std::string marker)
 			break;
 		size_t s = 0;
 		std::transform(in.begin() + i, in.begin() + i + 2 + size, in.begin() + i, tolower);
-		unsigned char m = getByteFromHex(in.substr(i + size, 2));
+		uint8_t m = getByteFromHex(in.substr(i + size, 2));
 		while ((m >> (7 - ++s)) & 1);
-		unsigned short meaning = m & 0x3F;
+		uint16_t meaning = m & 0x3F;
 		std::transform(in.begin() + i + 3, in.begin() + i + (2 + size) * s, in.begin() + i + (2 + size), tolower);
 		for (size_t i2 = i + 2 + size; i2 < i + (2 + size) * s; i2 += (2 + size))
 		{
 			if (in.find(marker, i2) != i2)
 				return{};
-			unsigned char m = getByteFromHex(in.substr(i2 + size, 2));
+			uint8_t m = getByteFromHex(in.substr(i2 + size, 2));
 			meaning <<= 6;
 			meaning |= m & 0x3F;
 		}

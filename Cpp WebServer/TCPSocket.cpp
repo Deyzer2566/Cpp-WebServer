@@ -38,16 +38,16 @@ void TCPSocket::close()
 
 bool TCPSocket::setBlocking(bool enable)
 {
-	if (this->socket < 0) return false;
+    if (this->socket < 0) return false;
 
 #ifdef _WIN32
-	unsigned long mode = enable ? 0 : 1;
-	return (ioctlsocket(this->socket, FIONBIO, &mode) == 0);
+    unsigned long mode = enable ? 0 : 1;
+    return (ioctlsocket(this->socket, FIONBIO, &mode) == 0);
 #else
-	int flags = fcntl(this->socket, F_GETFL, 0);
-	if (flags == -1) return false;
-	flags = enable ? (flags & ~O_NONBLOCK) : (flags | O_NONBLOCK);
-	return (fcntl(this->socket, F_SETFL, flags) == 0);
+    int flags = fcntl(this->socket, F_GETFL, 0);
+    if (flags == -1) return false;
+    flags = enable ? (flags & ~O_NONBLOCK) : (flags | O_NONBLOCK);
+    return (fcntl(this->socket, F_SETFL, flags) == 0);
 #endif
 }
 

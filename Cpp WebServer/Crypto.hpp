@@ -2,10 +2,11 @@
 #include <vector>
 #include <string>
 #include <array>
-unsigned long leftrotate(unsigned long x, unsigned long offset);
+#include <cstdint>
+uint32_t leftrotate(uint32_t x, uint32_t offset);
 
-std::string base64(std::vector<unsigned char>bytes);
+std::string base64(std::vector<uint8_t>bytes);
 
-std::array<unsigned long, 5> SHA1(std::string str);
+std::array<uint32_t, 5> SHA1(std::string str);
 
-std::array<unsigned long, 5> SHA1(std::vector<unsigned char> vect);
+std::array<uint32_t, 5> SHA1(std::vector<uint8_t> vect);

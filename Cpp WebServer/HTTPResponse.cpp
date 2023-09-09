@@ -21,11 +21,11 @@ void HTTPResponse::setMessage(std::string message)
 {
     this->message = message;
 }
-void HTTPResponse::setCode(unsigned short code)
+void HTTPResponse::setCode(uint16_t code)
 {
     this->code = code;
 }
-unsigned short HTTPResponse::getCode()
+uint16_t HTTPResponse::getCode()
 {
     return code;
 }

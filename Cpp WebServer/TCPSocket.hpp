@@ -17,7 +17,6 @@ protected:
 	sockaddr_in addr;
 
 public:
-	static const int packet_size = 4095;
 	/*
 	Конструктор сокета
 	*/

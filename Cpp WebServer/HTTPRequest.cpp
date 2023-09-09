@@ -1,5 +1,6 @@
 #include "HTTPRequest.hpp"
 #include "Utilite.hpp"
+#include <cstdint>
 HTTPRequest::HTTPRequest(){}
 HTTPRequest::HTTPRequest(std::string _X)
 {
@@ -15,11 +16,11 @@ HTTPRequest::HTTPRequest(std::string _X)
 	{
 		Unicode str = UTF_8_to_Unicode(uri, "%");
 		uri.clear();
-		unsigned short AB = 1040;
-		unsigned short YAB = 1071;
-		unsigned short A = 1072;
-		unsigned short YA = 1103;
-		for (unsigned short s : str){
+		uint16_t AB = 1040;
+		uint16_t YAB = 1071;
+		uint16_t A = 1072;
+		uint16_t YA = 1103;
+		for (uint16_t s : str){
 			if (s >= AB&&s <= YAB)
 				s -= (AB - 'À');
 			else if (s >= A && s <= YA)

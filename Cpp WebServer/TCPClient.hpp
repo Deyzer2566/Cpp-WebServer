@@ -10,7 +10,7 @@ private:
 	std::shared_ptr<TCPSocket> socket;
 
 public:
-	static const int packet_size = 4095;
+	static const int32_t packet_size = 4095;
 
 	TCPClient(TCPSocket* sock);
 

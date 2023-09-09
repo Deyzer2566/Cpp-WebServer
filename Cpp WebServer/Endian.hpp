@@ -1,8 +1,10 @@
 #pragma once
+#include <cstdint>
+#include <cstddef>
 static bool isHostBigEndian()
 {
-    int x = 1;
-    return !(*(char*)&x == 1);
+    int16_t x = 1;
+    return !(*(int8_t*)&x == 1);
 }
 template <typename T>
 T changeEndianIfNotBigEndian(T value)
@@ -13,7 +15,7 @@ T changeEndianIfNotBigEndian(T value)
     {
         T ret = 0;
         for (size_t i = 0; i < sizeof(T); i++)
-            *((unsigned char*)&ret + sizeof(T) - 1 - i) = *((unsigned char*)&value + i);
+            *((uint8_t*)&ret + sizeof(T) - 1 - i) = *((uint8_t*)&value + i);
         return ret;
     }
 }
